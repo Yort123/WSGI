@@ -1,0 +1,32 @@
+table, th{
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+tr{
+    text-align: center;
+    border: 1px solid black;
+}
+td{
+    text-align: center;
+    border: 1px solid black;
+}
+.results{
+    border: 2px solid black;
+    width: 10%;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+h1{
+    color: green;
+    font: 100px;
+}
+h2{
+    color: green;
+}
+
+.sideImg{
+    position: absolute;
+    width:25%;
+    top: 100px;
+}

@@ -1,0 +1,4 @@
+Teams
+ -> Name, Abbrev
+Players
+ -> ID, First, Last, Pos, Headshot, TeamLogo, TeamAbbrev
