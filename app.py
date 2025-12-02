@@ -6,7 +6,6 @@ from urllib.parse import parse_qs
 
 env = Environment(loader=FileSystemLoader('Template'))
 
-
 def static(envir, start_response):
     """
     :param envir:
@@ -76,25 +75,24 @@ def simple_app(envir, start_response):
     if img_response:
         return img_response
 
+    team = ""
     ## Passing data to the html file
     if not os.path.exists(full_path):
         start_response("404 Not Found", [("Content-Type", "text/plain; charset=utf-8")])
         return [b"404 Not Found"]
-
     if envir['REQUEST_METHOD'] == 'POST':
         try:
             size = int(envir.get('CONTENT_LENGTH', 0))
         except ValueError:
             size = 0
-        body = envir["wsgi.input"].read()
+        body = envir["wsgi.input"].read(size)
         params = parse_qs(body.decode())
         team = params.get("team", [''])[0]
-        filename = "Stats.html"
-        # response = team.encode("utf-8")
 
     with open(full_path, 'r', encoding="utf-8") as f:
         if filename == "Stats.html":
-            players = DB_Handler.get_players("CAR")
+            players = DB_Handler.get_players(team)
+            # player_stats = DB_Handler.get_players()
             template = env.get_template("Stats.html")
             html = template.render(players=players)
         else:

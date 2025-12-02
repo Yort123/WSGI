@@ -1,7 +1,10 @@
+import time
 import requests
+import datetime
+current_year = str((datetime.date.today().year - 1)) + str(datetime.date.today().year)
 
 
-class hockey:
+class Hockey:
     hockey_url = "https://api-web.nhle.com/v1/"
     def __init__(self):
         self.teamList = "0: Hurricanes, 1: Rangers"
@@ -35,16 +38,39 @@ class hockey:
                                    i, n["headshot"]])
         return playerInfo
 
+    def player_stats(self, ID: int, season=current_year, game_type=2):
+        # request_string = "https://api-web.nhle.com/v1/player/" + str(ID) + "/landing"
+        request_string = "https://api-web.nhle.com/v1/player/" + str(ID) + "/game-log/" + str(season) + "/" + str(game_type)
+        string = requests.get(request_string)
+        string = string.json()
+        tot_secs = datetime.timedelta(minutes=0, seconds=0)
+        stats = {"goals": 0, "toi": "", "points": 0, "shots": 0}
+        for n in string["gameLog"]:
+            stats["goals"] += int(n["goals"])
+            minutes, seconds = n["toi"].split(":")
+            tot_secs += datetime.timedelta(minutes=int(minutes), seconds=int(seconds))
+            if "shotsAgainst" in n:
+                stats["shotsAgainst"] += n["shotsAgainst"]
+                stats["goalsAgainst"] += n["goalsAgainst"]
+            else:
+                stats["points"] += int(n["points"])
+            stats["shots"] += n["shots"]
+        tot_min = int(tot_secs.total_seconds()) // 60
+        tot_sec = int(tot_secs.total_seconds()) % 60
+        stats["toi"] = f"{tot_min}:{tot_sec:02d}"
+        return stats
+
     def get_team(self):
         test = requests.get("https://api-web.nhle.com/v1/standings/now")
         ex = test.json()
         return ex
 
+
     # def getStats(self, player=None):
     #     print("Player:", player)
-    #     # player_info = db.getPlayer(player)
-    #     # if player_info is not None:
-    #     #     skater = [{"first": player_info[2], "last":player_info[3]}]
+    #     players = DB.getPlayer(player)
+    #     if player_info is not None:
+    #         skater = [{"first": player_info[2], "last":player_info[3]}]
     #     for q in self.pos:
     #         for i in players[q]:
     #             stats = self.playStats(i["id"])
@@ -68,6 +94,9 @@ class hockey:
     #                 names += [{"first": i["firstName"]["default"], "last": i["lastName"]["default"]}]
     # return names
 
-# test = Hockey()
-# test.getPlayers()
-# test.getNames(0)
+test = Hockey()
+print(test.player_stats(8473533))
+
+
+
+
